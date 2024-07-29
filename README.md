@@ -22,14 +22,7 @@ Mutexes (mutual exclusions) are used to prevent race conditions by ensuring that
 ### 3. Thread Synchronization
 Synchronization is crucial in ensuring that threads operate in a controlled manner. In this project, synchronization is achieved using mutexes to manage the forks.
 
-### 4. Memory Management
-Proper allocation and deallocation of memory is crucial. Each philosopher may dynamically allocate memory, which must be freed correctly to avoid memory leaks.
-
-**Key Functions:**
-- `malloc`: Allocate memory.
-- `free`: Deallocate memory.
-
-### 5. Timers and Delays
+### 4. Timers and Delays
 Timing functions are used to simulate the time spent eating, thinking, and sleeping. Accurate timing is essential to ensure the simulation runs correctly.
 
 **Key Functions:**
