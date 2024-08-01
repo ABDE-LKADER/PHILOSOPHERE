@@ -1,12 +1,12 @@
 NAME		=	philo
 
-SRCS		=	
+SRCS		=	philo.c
 
 OBJS		=	$(SRCS:.c=.o)
-HEADER		=	includes/
+HEADER		=	philo.h
 
 CC			=	cc
-FLAGS		=	-Wall -Wextra -Werror
+FLAGS		=	-Wall -Wextra -Werror -g -fsanitize=address
 RM			=	rm -fr
 
 GREEN		=	"\033[1;32m"
