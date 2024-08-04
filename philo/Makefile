@@ -1,12 +1,12 @@
 NAME		=	philo
 
-SRCS		=	philo.c
+SRCS		=	philo.c philo_parce.c philo_tools.c
 
 OBJS		=	$(SRCS:.c=.o)
 HEADER		=	philo.h
 
 CC			=	cc
-FLAGS		=	-Wall -Wextra -Werror -g -fsanitize=address
+FLAGS		=	-Wall -Wextra -Werror -pthread -g -fsanitize=thread
 RM			=	rm -fr
 
 GREEN		=	"\033[1;32m"

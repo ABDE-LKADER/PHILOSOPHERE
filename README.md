@@ -67,3 +67,5 @@ Timing functions are used to simulate the time spent eating, thinking, and sleep
 4. **Cleanup**
    - Ensure all processes are properly terminated.
    - Destroy semaphores.
+
+> NB: synchronization mechanisms (e.g., mutexes, semaphores)
