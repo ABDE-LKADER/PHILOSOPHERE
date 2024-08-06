@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/04 16:48:05 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/06 15:18:48 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,17 +41,16 @@ void	life_cycle_log(t_philo *philo, int mode)
 	time_t		time;
 
 	pthread_mutex_lock(&philo->infos->print_lock);
-	if (!philo->infos->philo_dead)
-	{
-		time = get_time() - philo->infos->start_time;
-		if (mode == N1)
-			printf("%-12ld %-4d %s\n", time, philo->tid, FORK);
-		if (mode == N2)
-			printf("%-12ld %-4d %s\n", time, philo->tid, EAT);
-		if (mode == N3)
-			printf("%-12ld %-4d %s\n", time, philo->tid, SLEEP);
-		if (mode == N4)
-			printf("%-12ld %-4d %s\n", time, philo->tid, THINK);
-	}
+	time = get_time() - philo->infos->start_time;
+	if (mode == N1 && !philo->infos->philo_dead)
+		printf("%-12ld %-4d %s\n", time, philo->tid, FORK);
+	if (mode == N2 && !philo->infos->philo_dead)
+		printf("%-12ld %-4d %s\n", time, philo->tid, EAT);
+	if (mode == N3 && !philo->infos->philo_dead)
+		printf("%-12ld %-4d %s\n", time, philo->tid, SLEEP);
+	if (mode == N4 && !philo->infos->philo_dead)
+		printf("%-12ld %-4d %s\n", time, philo->tid, THINK);
+	if (mode == N5 && philo->infos->philo_dead)
+		printf("%-12ld %-4d %s\n", time, philo->tid, DIED);
 	pthread_mutex_unlock(&philo->infos->print_lock);
 }

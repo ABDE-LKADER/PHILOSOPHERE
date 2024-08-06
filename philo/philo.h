@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:30:51 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/04 18:52:46 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/06 15:10:33 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@
 # define EAT "is eating"
 # define SLEEP "is sleeping"
 # define THINK "is thinking"
-# define DIE "died"
+# define DIED "died"
 
 # define ERROR_MSG "\033[1;31mError:\033[0m <use a valid values>\n"
 # define FAILED_MSG "\033[1;31mError:\033[0m <use a valid values>\n"
@@ -68,7 +68,7 @@ typedef struct s_infos
 typedef struct s_philo
 {
 	int				tid;
-
+	time_t			last_meal;
 	t_infos			*infos;
 	pthread_t		my_thread;
 	pthread_mutex_t	my_fork;
