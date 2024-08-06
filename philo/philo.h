@@ -59,25 +59,27 @@ typedef struct s_infos
 	int				philo_num;
 	int				meals_num;
 	int				sleep_time;
-	int				start_time;
 	bool			philo_dead;
+	time_t			start_time;
 	pthread_mutex_t	print_lock;
+	pthread_mutex_t	main_lock;
 }					t_infos;
 
 typedef struct s_philo
 {
-	int				uid;
+	int				tid;
+
 	t_infos			*infos;
 	pthread_t		my_thread;
 	pthread_mutex_t	my_fork;
 	struct s_philo	*next;
 }					t_philo;
 
-size_t		get_time(void);
+time_t		get_time(void);
 int			_atoi(char *str);
 void		*life_cycle(void *value);
 void		putstr_fd(char *s, int fd);
-void		print_use_mutex(t_philo *philo, int mode);
+void		life_cycle_log(t_philo *philo, int mode);
 int			parcer(int ac, char **av, t_infos *infos);
 t_philo		*init_philos(t_philo **philo, t_infos *infos);
 

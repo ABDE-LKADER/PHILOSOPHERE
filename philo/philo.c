@@ -12,47 +12,67 @@
 
 #include <philo.h>
 
+void	_sleep(time_t time)
+{
+	time_t		start;
+
+	start  = get_time();
+	while (get_time() - start < time)
+		usleep(10);	
+}
+
 void	*life_cycle(void *value)
 {
 	t_philo		*philo;
 
 	philo = value;
-	if (!(philo->uid % N2))
-		usleep (philo->infos->eat_time * TIM);
-	while (TRUE)
+	while (!philo->infos->philo_dead)
 	{
 		pthread_mutex_lock(&philo->my_fork);
-		print_use_mutex(philo, N1);
+		life_cycle_log(philo, N1);
 		pthread_mutex_lock(&philo->next->my_fork);
-		print_use_mutex(philo, N1);
-		print_use_mutex(philo, N2);
-		usleep(philo->infos->eat_time * TIM);
-		print_use_mutex(philo, N3);
-		usleep(philo->infos->sleep_time * TIM);
+		life_cycle_log(philo, N1);
+		life_cycle_log(philo, N2);
+		_sleep(philo->infos->eat_time);
+		life_cycle_log(philo, N3);
+		_sleep(philo->infos->sleep_time);
 		pthread_mutex_unlock(&philo->my_fork);
 		pthread_mutex_unlock(&philo->next->my_fork);
-		print_use_mutex(philo, N4);
+		life_cycle_log(philo, N4);
 	}
-	print_use_mutex(philo, N5);
 	return (philo);
+}
+
+int	threads_manager(t_philo *philo, t_infos *infos)
+{
+	t_philo		*loop;
+
+	(TRUE) && (loop = philo, infos->start_time = get_time());
+	while (loop)
+	{
+		pthread_create(&loop->my_thread, NULL, life_cycle, loop);
+		if (loop->tid == infos->philo_num)
+			break ;
+		loop = loop->next;
+	}
+	while (philo && !infos->philo_dead)
+		philo = philo->next;
+	return (TRUE);
 }
 
 int	main(int ac, char **av)
 {
 	t_infos		infos;
-	t_philo		*head;
 	t_philo		*philo;
 
-	(memset(&infos, false, sizeof(t_infos)), philo = NULL,
-		pthread_mutex_init(&infos.print_lock, NULL));
+	(memset(&infos, false, sizeof(t_infos)), philo = NULL);
 	if (ac != N5 && ac != N6)
 		return (putstr_fd(USAGE_MSG, STDERR_FILENO), EXIT_FAILURE);
 	if (parcer(ac, av, &infos) == ERROR)
 		return (putstr_fd(ERROR_MSG, STDERR_FILENO), EXIT_FAILURE);
 	if (init_philos(&philo, &infos) == NULL)
 		return (putstr_fd(FAILED_MSG, STDERR_FILENO), EXIT_FAILURE);
-	head = philo;
-	while (philo && !infos.philo_dead)
-		philo = philo->next;
+	if (threads_manager(philo, &infos) == ERROR)
+		return (putstr_fd(FAILED_MSG, STDERR_FILENO), EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }

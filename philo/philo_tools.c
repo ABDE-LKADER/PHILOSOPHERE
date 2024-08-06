@@ -20,31 +20,9 @@ void	putstr_fd(char *s, int fd)
 		write(fd, s++, N1);
 }
 
-void	print_use_mutex(t_philo *philo, int mode)
-{
-	int		time;
-
-	pthread_mutex_lock(&philo->infos->print_lock);
-	if (!philo->infos->philo_dead)
-	{
-		time = get_time() - philo->infos->start_time;
-		if (mode == N1)
-			printf("%-12d %-4d %s\n", time, philo->uid, FORK);
-		if (mode == N2)
-			printf("%-12d %-4d %s\n", time, philo->uid, EAT);
-		if (mode == N3)
-			printf("%-12d %-4d %s\n", time, philo->uid, SLEEP);
-		if (mode == N4)
-			printf("%-12d %-4d %s\n", time, philo->uid, THINK);
-	}
-	if (philo->infos->philo_dead && mode == N5)
-		printf("%-12d %-4d %s\n", time, philo->uid, DIE);
-	pthread_mutex_unlock(&philo->infos->print_lock);
-}
-
 int	_atoi(char *str)
 {
-	long		num;
+	time_t		num;
 
 	num = FALSE;
 	(*str == '+') && (str++);
@@ -56,4 +34,24 @@ int	_atoi(char *str)
 		str++;
 	}
 	return (num);
+}
+
+void	life_cycle_log(t_philo *philo, int mode)
+{
+	time_t		time;
+
+	pthread_mutex_lock(&philo->infos->print_lock);
+	if (!philo->infos->philo_dead)
+	{
+		time = get_time() - philo->infos->start_time;
+		if (mode == N1)
+			printf("%-12ld %-4d %s\n", time, philo->tid, FORK);
+		if (mode == N2)
+			printf("%-12ld %-4d %s\n", time, philo->tid, EAT);
+		if (mode == N3)
+			printf("%-12ld %-4d %s\n", time, philo->tid, SLEEP);
+		if (mode == N4)
+			printf("%-12ld %-4d %s\n", time, philo->tid, THINK);
+	}
+	pthread_mutex_unlock(&philo->infos->print_lock);
 }

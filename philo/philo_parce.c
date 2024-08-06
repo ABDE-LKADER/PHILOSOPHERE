@@ -12,7 +12,7 @@
 
 #include <philo.h>
 
-size_t	get_time(void)
+time_t	get_time(void)
 {
 	struct timeval	time;
 
@@ -20,7 +20,7 @@ size_t	get_time(void)
 		(time.tv_sec * 1000) + (time.tv_usec / 1000));
 }
 
-static int	create_philos(t_philo **philo, t_infos *infos, int uid)
+static int	create_philos(t_philo **philo, t_infos *infos, int tid)
 {
 	t_philo		*new;
 	t_philo		*last;
@@ -28,7 +28,7 @@ static int	create_philos(t_philo **philo, t_infos *infos, int uid)
 	new = malloc(sizeof(t_philo));
 	if (!new)
 		return (ERROR);
-	(TRUE) && (new->uid = uid, new->infos = infos,
+	(TRUE) && (new->tid = tid, new->infos = infos,
 		pthread_mutex_init(&new->my_fork, NULL), new->next = NULL);
 	if (!*philo)
 		return (*philo = new, TRUE);
@@ -40,24 +40,17 @@ static int	create_philos(t_philo **philo, t_infos *infos, int uid)
 
 t_philo	*init_philos(t_philo **philo, t_infos *infos)
 {
-	int			uid;
+	int			tid;
 	t_philo		*loop;
 
-	uid = FALSE;
-	while (++uid <= infos->philo_num)
-		create_philos(philo, infos, uid);
+	(TRUE) && (tid = FALSE, pthread_mutex_init(&infos->print_lock, NULL),
+		pthread_mutex_init(&infos->main_lock, NULL));
+	while (++tid <= infos->philo_num)
+		create_philos(philo, infos, tid);
 	loop = *philo;
 	while (loop->next)
 		loop = loop->next;
 	loop->next = *philo;
-	(TRUE) && (loop = *philo, infos->start_time = get_time());
-	while (loop)
-	{
-		pthread_create(&loop->my_thread, NULL, life_cycle, loop);
-		if (loop->uid == infos->philo_num)
-			break ;
-		loop = loop->next;
-	}
 	return (loop);
 }
 
@@ -66,7 +59,6 @@ int	parcer(int ac, char **av, t_infos *infos)
 	int		num;
 	int		index;
 
-	infos->meals_num = ERROR;
 	while (--ac)
 	{
 		(TRUE) && (index = ERROR, num = _atoi(av[ac]));
