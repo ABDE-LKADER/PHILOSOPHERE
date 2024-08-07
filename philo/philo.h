@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:30:51 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/06 15:10:33 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/06 19:33:27 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,17 +61,18 @@ typedef struct s_infos
 	int				sleep_time;
 	bool			philo_dead;
 	time_t			start_time;
+	pthread_mutex_t	check_philo;
 	pthread_mutex_t	print_lock;
-	pthread_mutex_t	main_lock;
 }					t_infos;
 
 typedef struct s_philo
 {
 	int				tid;
-	time_t			last_meal;
 	t_infos			*infos;
+	time_t			last_meal;
 	pthread_t		my_thread;
-	pthread_mutex_t	my_fork;
+	pthread_mutex_t	my_fork; 
+	pthread_mutex_t	safe_check;
 	struct s_philo	*next;
 }					t_philo;
 

@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/06 15:18:48 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/06 20:13:48 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,19 +38,23 @@ int	_atoi(char *str)
 
 void	life_cycle_log(t_philo *philo, int mode)
 {
+	int			check;
 	time_t		time;
 
+	pthread_mutex_lock(&philo->infos->check_philo);
+	check = philo->infos->philo_dead; // HERE
+	pthread_mutex_unlock(&philo->infos->check_philo);
 	pthread_mutex_lock(&philo->infos->print_lock);
 	time = get_time() - philo->infos->start_time;
-	if (mode == N1 && !philo->infos->philo_dead)
+	if (mode == N1 && !check)
 		printf("%-12ld %-4d %s\n", time, philo->tid, FORK);
-	if (mode == N2 && !philo->infos->philo_dead)
+	if (mode == N2 && !check)
 		printf("%-12ld %-4d %s\n", time, philo->tid, EAT);
-	if (mode == N3 && !philo->infos->philo_dead)
+	if (mode == N3 && !check)
 		printf("%-12ld %-4d %s\n", time, philo->tid, SLEEP);
-	if (mode == N4 && !philo->infos->philo_dead)
+	if (mode == N4 && !check)
 		printf("%-12ld %-4d %s\n", time, philo->tid, THINK);
-	if (mode == N5 && philo->infos->philo_dead)
+	if (mode == N5 && check)
 		printf("%-12ld %-4d %s\n", time, philo->tid, DIED);
 	pthread_mutex_unlock(&philo->infos->print_lock);
 }

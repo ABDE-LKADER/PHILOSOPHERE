@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 13:10:42 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/06 15:10:38 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/06 21:15:21 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,9 @@ static int	create_philos(t_philo **philo, t_infos *infos, int tid)
 	if (!new)
 		return (ERROR);
 	(TRUE) && (new->tid = tid, new->infos = infos,
-		pthread_mutex_init(&new->my_fork, NULL), new->next = NULL);
+		pthread_mutex_init(&new->my_fork, NULL),
+		pthread_mutex_init(&new->safe_check, NULL),
+		new->next = NULL);
 	if (!*philo)
 		return (*philo = new, TRUE);
 	last = *philo;
@@ -43,7 +45,8 @@ t_philo	*init_philos(t_philo **philo, t_infos *infos)
 	int			tid;
 	t_philo		*loop;
 
-	(TRUE) && (tid = FALSE, pthread_mutex_init(&infos->print_lock, NULL));
+	(TRUE) && (tid = FALSE, pthread_mutex_init(&infos->print_lock, NULL),
+		pthread_mutex_init(&infos->check_philo, NULL));
 	while (++tid <= infos->philo_num)
 		create_philos(philo, infos, tid);
 	loop = *philo;
@@ -55,7 +58,6 @@ t_philo	*init_philos(t_philo **philo, t_infos *infos)
 	{
 		loop->last_meal = get_time();
 		pthread_create(&loop->my_thread, NULL, life_cycle, loop);
-		pthread_detach(loop->my_thread);
 		if (loop->tid == infos->philo_num)
 			break ;
 		loop = loop->next;
