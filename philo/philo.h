@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:30:51 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/06 19:33:27 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/08 22:15:43 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,20 +26,11 @@
 # define FALSE 0
 # define ERROR -1
 
-# define N1 1
-# define N2 2
-# define N3 3
-# define N4 4
-# define N5 5
-# define N6 6
+# define READ 0
+# define WRITE 1
 
-# define TEN 10
-# define NINE 57
-# define ZERO 48
-
-# define MTM 60
-# define MPH 200
-# define TIM 1000
+# define LOCK 0
+# define UNLOCK 1
 
 # define FORK "has taken a fork"
 # define EAT "is eating"
@@ -52,16 +43,23 @@
 # define USAGE_MSG "\033[1;33mUsage:\033[0m <philo_num> <die_time> <eat_time> \
 <sleep_time>\n"
 
+# define JOIN_FAIL "\033[1;31mError:\033[0m <failed to join the thread>\n"
+# define INIT_FAIL "\033[1;31mError:\033[0m <failed to initialize the mutex>\n"
+# define LOCK_FAIL "\033[1;31mError:\033[0m <failed to lock the mutex>\n"
+# define UNLOCK_FAIL "\033[1;31mError:\033[0m <failed to lock the mutex>\n"
+# define CREATE_FAIL "\033[1;31mError:\033[0m <failed to create a new thread>\n"
+# define ALLOC_FAIL "\033[1;31mError:\033[0m <failed to allocate memory>\n"
+
 typedef struct s_infos
 {
-	int				eat_time;
-	int				die_time;
 	int				philo_num;
 	int				meals_num;
+	int				eat_time;
+	int				die_time;
 	int				sleep_time;
-	bool			philo_dead;
+	long			philo_dead;
 	time_t			start_time;
-	pthread_mutex_t	check_philo;
+	pthread_mutex_t	dead_lock;
 	pthread_mutex_t	print_lock;
 }					t_infos;
 
@@ -70,18 +68,24 @@ typedef struct s_philo
 	int				tid;
 	t_infos			*infos;
 	time_t			last_meal;
-	pthread_t		my_thread;
-	pthread_mutex_t	my_fork; 
-	pthread_mutex_t	safe_check;
+	pthread_t		thread_id;
+	pthread_mutex_t	meal_lock;
+	pthread_mutex_t	philo_fork;
 	struct s_philo	*next;
 }					t_philo;
 
 time_t		get_time(void);
-int			_atoi(char *str);
+void		str_error(char *s);
 void		*life_cycle(void *value);
-void		putstr_fd(char *s, int fd);
-void		life_cycle_log(t_philo *philo, int mode);
+int			life_cycle_log(t_philo *philo, int mode);
 int			parcer(int ac, char **av, t_infos *infos);
-t_philo		*init_philos(t_philo **philo, t_infos *infos);
+int			init_philos(t_philo **philo, t_infos *infos);
+long		safe_access(pthread_mutex_t *mutex, long *value,
+				long new, bool mode);
+int			protected_lock(pthread_mutex_t *mutex1, pthread_mutex_t *mutex2,
+				int mode);
+void		join_threads(t_philo *philo, int max_id);
+void		cleanup(t_philo *philo, t_infos *infos);
+int			create_philos(t_philo **philo, t_infos *infos);
 
 #endif

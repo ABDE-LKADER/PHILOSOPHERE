@@ -6,63 +6,34 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 13:10:42 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/06 21:15:21 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/08 10:16:09 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo.h>
 
-time_t	get_time(void)
+void	str_error(char *s)
 {
-	struct timeval	time;
-
-	return (gettimeofday(&time, NULL),
-		(time.tv_sec * 1000) + (time.tv_usec / 1000));
+	if (!s)
+		return ;
+	while (*s)
+		write(2, s++, 1);
 }
 
-static int	create_philos(t_philo **philo, t_infos *infos, int tid)
+static int	ato_num(char *str)
 {
-	t_philo		*new;
-	t_philo		*last;
+	time_t		num;
 
-	new = malloc(sizeof(t_philo));
-	if (!new)
-		return (ERROR);
-	(TRUE) && (new->tid = tid, new->infos = infos,
-		pthread_mutex_init(&new->my_fork, NULL),
-		pthread_mutex_init(&new->safe_check, NULL),
-		new->next = NULL);
-	if (!*philo)
-		return (*philo = new, TRUE);
-	last = *philo;
-	while (last->next)
-		last = last->next;
-	return (last->next = new, TRUE);
-}
-
-t_philo	*init_philos(t_philo **philo, t_infos *infos)
-{
-	int			tid;
-	t_philo		*loop;
-
-	(TRUE) && (tid = FALSE, pthread_mutex_init(&infos->print_lock, NULL),
-		pthread_mutex_init(&infos->check_philo, NULL));
-	while (++tid <= infos->philo_num)
-		create_philos(philo, infos, tid);
-	loop = *philo;
-	while (loop->next)
-		loop = loop->next;
-	loop->next = *philo;
-	(TRUE) && (loop = *philo, infos->start_time = get_time());
-	while (loop)
+	num = FALSE;
+	(*str == '+') && (str++);
+	while (*str && (*str >= 48 && *str <= 57))
 	{
-		loop->last_meal = get_time();
-		pthread_create(&loop->my_thread, NULL, life_cycle, loop);
-		if (loop->tid == infos->philo_num)
-			break ;
-		loop = loop->next;
+		num = num * 10 + *str - 48;
+		if (num > INT_MAX)
+			return (ERROR);
+		str++;
 	}
-	return (loop);
+	return (num);
 }
 
 int	parcer(int ac, char **av, t_infos *infos)
@@ -72,23 +43,23 @@ int	parcer(int ac, char **av, t_infos *infos)
 
 	while (--ac)
 	{
-		(TRUE) && (index = ERROR, num = _atoi(av[ac]));
+		(TRUE) && (index = ERROR, num = ato_num(av[ac]));
 		while (av[ac][++index])
 		{
 			if (!index && av[ac][index] == '+')
 				av[ac]++;
-			if (!(av[ac][index] >= ZERO && av[ac][index] <= NINE))
+			if (!(av[ac][index] >= 48 && av[ac][index] <= 57))
 				return (ERROR);
 		}
-		if (num > MPH && ac == N1)
+		if (num > 200 && ac == 1)
 			return (ERROR);
-		if (num < MTM && (ac == N2 || ac == N3 || ac == N4))
+		if (num < 60 && (ac == 2 || ac == 3 || ac == 4))
 			return (ERROR);
-		(ac == N1) && (infos->philo_num = num);
-		(ac == N2) && (infos->die_time = num);
-		(ac == N3) && (infos->eat_time = num);
-		(ac == N4) && (infos->sleep_time = num);
-		(ac == N5) && (infos->meals_num = num);
+		(ac == 1) && (infos->philo_num = num);
+		(ac == 2) && (infos->die_time = num);
+		(ac == 3) && (infos->eat_time = num);
+		(ac == 4) && (infos->sleep_time = num);
+		(ac == 5) && (infos->meals_num = num);
 	}
 	return (TRUE);
 }
