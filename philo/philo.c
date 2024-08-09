@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-int		protected_lock(pthread_mutex_t *m_1, pthread_mutex_t *m_2, int mode)
+int	protected_lock(pthread_mutex_t *m_1, pthread_mutex_t *m_2, int mode)
 {
 	if (mode == LOCK)
 	{
@@ -29,7 +29,7 @@ int		protected_lock(pthread_mutex_t *m_1, pthread_mutex_t *m_2, int mode)
 	return (TRUE);
 }
 
-long	safe_access(pthread_mutex_t *mutex, long *value, long new, bool mode)
+long	safe_access(pthread_mutex_t *mutex, long *value, long new, int mode)
 {
 	long		fetch;
 
@@ -40,10 +40,10 @@ long	safe_access(pthread_mutex_t *mutex, long *value, long new, bool mode)
 		fetch = *value;
 	else if (mode == WRITE)
 		*value = new;
+	else if (mode == INCR)
+		(*value)++;
 	if (pthread_mutex_unlock(mutex))
 		return (str_error(UNLOCK_FAIL), ERROR);
-	if (mode == WRITE)
-		return (FALSE);
 	return (fetch);
 }
 
@@ -61,10 +61,14 @@ void	threads_manager(t_philo *philo, t_infos *infos)
 			break ;
 		if (get_time() - last_meal >= infos->die_time)
 		{
-			if (!safe_access(&infos->dead_lock, &infos->philo_dead, TRUE, WRITE))
-				life_cycle_log(loop, 5);
+			if (!safe_access(&infos->dead_lock, &infos->philo_dead,
+					TRUE, WRITE))
+				life_cycle_log(loop, DIED, TRUE);
 			break ;
 		}
+		else if (safe_access(&infos->dead_lock, &infos->philos_full,
+				FALSE, READ) == infos->philo_num)
+			break ;
 		loop = loop->next;
 	}
 	join_threads(philo, infos->philo_num);
@@ -75,12 +79,15 @@ int	main(int ac, char **av)
 	t_infos		infos;
 	t_philo		*philo;
 
-	(philo = NULL, memset(&infos, false, sizeof(t_infos)));
+	philo = NULL;
+	memset(&infos, false, sizeof(t_infos));
 	if (ac != 5 && ac != 6)
 		return (str_error(USAGE_MSG), EXIT_FAILURE);
 	if (parcer(ac, av, &infos) == ERROR)
 		return (str_error(ERROR_MSG), EXIT_FAILURE);
-	if (create_philos(&philo, &infos) == ERROR)
+	if (init_philos(&philo, &infos) == ERROR)
+		return (cleanup(philo, &infos), EXIT_FAILURE);
+	if (create_philos(philo, &infos) == ERROR)
 		return (cleanup(philo, &infos), EXIT_FAILURE);
 	return (threads_manager(philo, &infos),
 		cleanup(philo, &infos), EXIT_SUCCESS);

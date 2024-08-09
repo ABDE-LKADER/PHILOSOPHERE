@@ -41,6 +41,7 @@ int	parcer(int ac, char **av, t_infos *infos)
 	int		num;
 	int		index;
 
+	infos->meals_num = -1;
 	while (--ac)
 	{
 		(TRUE) && (index = ERROR, num = ato_num(av[ac]));

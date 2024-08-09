@@ -28,6 +28,7 @@
 
 # define READ 0
 # define WRITE 1
+# define INCR 2
 
 # define LOCK 0
 # define UNLOCK 1
@@ -49,6 +50,7 @@
 # define UNLOCK_FAIL "\033[1;31mError:\033[0m <failed to lock the mutex>\n"
 # define CREATE_FAIL "\033[1;31mError:\033[0m <failed to create a new thread>\n"
 # define ALLOC_FAIL "\033[1;31mError:\033[0m <failed to allocate memory>\n"
+# define DESTROY_FAIL "\033[1;31mError:\033[0m <failed to destroy the mutex>\n"
 
 typedef struct s_infos
 {
@@ -58,6 +60,7 @@ typedef struct s_infos
 	int				die_time;
 	int				sleep_time;
 	long			philo_dead;
+	long			philos_full;
 	time_t			start_time;
 	pthread_mutex_t	dead_lock;
 	pthread_mutex_t	print_lock;
@@ -77,15 +80,15 @@ typedef struct s_philo
 time_t		get_time(void);
 void		str_error(char *s);
 void		*life_cycle(void *value);
-int			life_cycle_log(t_philo *philo, int mode);
+int			life_cycle_log(t_philo *philo, char *log, int mode);
 int			parcer(int ac, char **av, t_infos *infos);
 int			init_philos(t_philo **philo, t_infos *infos);
 long		safe_access(pthread_mutex_t *mutex, long *value,
-				long new, bool mode);
+				long new, int mode);
 int			protected_lock(pthread_mutex_t *mutex1, pthread_mutex_t *mutex2,
 				int mode);
 void		join_threads(t_philo *philo, int max_id);
 void		cleanup(t_philo *philo, t_infos *infos);
-int			create_philos(t_philo **philo, t_infos *infos);
+int			create_philos(t_philo *philo, t_infos *infos);
 
 #endif

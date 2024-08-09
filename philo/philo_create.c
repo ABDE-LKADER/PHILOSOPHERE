@@ -53,7 +53,11 @@ static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
 	if (pthread_mutex_init(&new->meal_lock, NULL))
 		return (str_error(INIT_FAIL), ERROR);
 	if (pthread_mutex_init(&new->philo_fork, NULL))
+	{
+		if (pthread_mutex_destroy(&new->meal_lock))
+			return (str_error(DESTROY_FAIL), ERROR);
 		return (str_error(INIT_FAIL), ERROR);
+	}
 	(TRUE) && (new->tid = tid, new->infos = infos,
 		new->next = NULL);
 	if (!*philo)
@@ -68,16 +72,18 @@ static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
 int	init_philos(t_philo **philo, t_infos *infos)
 {
 	int			tid;
-	int			errno;
 	t_philo		*loop;
 
-	(TRUE) && (tid = 0, errno = TRUE);
+	tid = 0;
 	if (pthread_mutex_init(&infos->print_lock, NULL))
 		return (str_error(INIT_FAIL), ERROR);
 	if (pthread_mutex_init(&infos->dead_lock, NULL))
 		return (str_error(INIT_FAIL), ERROR);
-	while (++tid <= infos->philo_num && errno == TRUE)
-		errno = create_philo_node(philo, infos, tid);
+	while (++tid <= infos->philo_num)
+	{
+		if (create_philo_node(philo, infos, tid) == ERROR)
+			return (ERROR);
+	}
 	loop = *philo;
 	while (loop && loop->next)
 		loop = loop->next;
@@ -86,13 +92,11 @@ int	init_philos(t_philo **philo, t_infos *infos)
 	return (TRUE);
 }
 
-int	create_philos(t_philo **philos, t_infos *infos)
+int	create_philos(t_philo *philos, t_infos *infos)
 {
 	t_philo		*philo;
 
-	if (init_philos(philos, infos) == ERROR)
-		return (ERROR);
-	philo = *philos;
+	philo = philos;
 	infos->start_time = get_time();
 	while (philo)
 	{
@@ -100,8 +104,8 @@ int	create_philos(t_philo **philos, t_infos *infos)
 		if (pthread_create(&philo->thread_id, NULL, life_cycle, philo))
 		{
 			safe_access(&infos->dead_lock, &infos->philo_dead, TRUE, WRITE);
-			return (join_threads(*philos, philo->tid - 1), cleanup(*philos,
-				infos), str_error(CREATE_FAIL), ERROR);
+			return (join_threads(philos, philo->tid - 1),
+				str_error(CREATE_FAIL), ERROR);
 		}
 		if (philo->tid == infos->philo_num)
 			return (TRUE);
