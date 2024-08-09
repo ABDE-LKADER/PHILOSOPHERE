@@ -1,12 +1,12 @@
 NAME		=	philo_bonus
 
-SRCS		=	
+SRCS		=	philo_bonus.c philo_parce.c philo_create.c life_cycle.c
 
 OBJS		=	$(SRCS:.c=.o)
-HEADER		=	includes/
+HEADER		=	philo_bonus.h
 
 CC			=	cc
-FLAGS		=	-Wall -Wextra -Werror
+FLAGS		=	-Wall -Wextra -pthread # -g -fsanitize=thread
 RM			=	rm -fr
 
 GREEN		=	"\033[1;32m"
@@ -31,7 +31,7 @@ $(NAME): $(OBJS)
 	@$(CC) $(FLAGS) $^ -o $(NAME)
 
 $(OBJS): %.o: %.c $(HEADER)
-	@$(CC) $(FLAGS) -c -I includes $< -o $@
+	@$(CC) $(FLAGS) -c -I . $< -o $@
 	@printf $(GREEN)"."$(RESET)
 
 clean:
