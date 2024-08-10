@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 13:10:42 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/08 10:16:09 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/10 20:36:11 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	parcer(int ac, char **av, t_infos *infos)
 			if (!(av[ac][index] >= 48 && av[ac][index] <= 57))
 				return (ERROR);
 		}
-		if (num > 200 && ac == 1)
+		if (!*av[ac] || (num > 200 && ac == 1))
 			return (ERROR);
 		if (num < 60 && (ac == 2 || ac == 3 || ac == 4))
 			return (ERROR);
