@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/11 18:06:30 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/12 21:54:11 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	cleanup(t_philo *philo, t_infos *infos)
 {
 	while (philo)
 	{
-		if (philo->tid == infos->philo_num)
+		if (philo->id == infos->philo_num)
 		{
 			free(philo);
 			break ;
@@ -26,19 +26,7 @@ void	cleanup(t_philo *philo, t_infos *infos)
 	}
 }
 
-void	join_threads(t_philo *philo, int max_id)
-{
-	while (philo)
-	{
-		if (pthread_join(philo->thread_id, NULL))
-			str_error(JOIN_FAIL);
-		if (philo->tid == max_id)
-			break ;
-		philo = philo->next;
-	}
-}
-
-static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
+static int	create_philo_node(t_philo **philo, t_infos *infos, int id)
 {
 	t_philo		*new;
 	t_philo		*last;
@@ -46,7 +34,7 @@ static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
 	new = malloc(sizeof(t_philo));
 	if (!new)
 		return (str_error(ALLOC_FAIL), ERROR);
-	(TRUE) && (new->tid = tid, new->infos = infos,
+	(TRUE) && (new->id = id, new->infos = infos,
 		new->next = NULL);
 	if (!*philo)
 		return (*philo = new, TRUE);
@@ -59,14 +47,13 @@ static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
 
 int	init_philos(t_philo **philo, t_infos *infos)
 {
-	int			tid;
+	int			id;
 	t_philo		*loop;
 
-	tid = 0;
-	sem_open();
-	while (++tid <= infos->philo_num)
+	id = 0;
+	while (++id <= infos->philo_num)
 	{
-		if (create_philo_node(philo, infos, tid) == ERROR)
+		if (create_philo_node(philo, infos, id) == ERROR)
 			return (ERROR);
 	}
 	loop = *philo;
@@ -86,13 +73,7 @@ int	create_philos(t_philo *philos, t_infos *infos)
 	while (philo)
 	{
 		philo->last_meal = get_time();
-		if (pthread_create(&philo->thread_id, NULL, life_cycle, philo))
-		{
-			// infos->philo_dead
-			return (join_threads(philos, philo->tid - 1),
-				str_error(CREATE_FAIL), ERROR);
-		}
-		if (philo->tid == infos->philo_num)
+		if (philo->id == infos->philo_num)
 			return (TRUE);
 		philo = philo->next;
 	}

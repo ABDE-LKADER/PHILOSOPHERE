@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 21:19:32 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/11 19:11:53 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/12 21:54:38 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,10 @@ int	life_cycle_log(t_philo *philo, char *log, int mode)
 		return (ERROR);
 	if (mode == TRUE)
 		printf("%-12ld %-4d %s\n", get_time() - philo->infos->start_time,
-			philo->tid, log);
+			philo->id, log);
 	else if (philo->infos->philo_dead)
 		printf("%-12ld %-4d %s\n", get_time() - philo->infos->start_time,
-			philo->tid, log);
+			philo->id, log);
 	if (UNLOCK)
 		return (ERROR);
 	return (TRUE);

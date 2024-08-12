@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:30:51 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/08 22:15:43 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/12 21:52:47 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@
 # define UNLOCK_FAIL "\033[1;31mError:\033[0m <failed to lock the mutex>\n"
 # define CREATE_FAIL "\033[1;31mError:\033[0m <failed to create a new thread>\n"
 # define ALLOC_FAIL "\033[1;31mError:\033[0m <failed to allocate memory>\n"
-# define DESTROY_FAIL "\033[1;31mError:\033[0m <failed to destroy the mutex>\n"
 
 typedef struct s_infos
 {

@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:30:51 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/11 19:20:50 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/12 21:54:18 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@
 # define UNLOCK_FAIL "\033[1;31mError:\033[0m <failed to lock the mutex>\n"
 # define CREATE_FAIL "\033[1;31mError:\033[0m <failed to create a new thread>\n"
 # define ALLOC_FAIL "\033[1;31mError:\033[0m <failed to allocate memory>\n"
-# define DESTROY_FAIL "\033[1;31mError:\033[0m <failed to destroy the mutex>\n"
 
 typedef struct s_infos
 {
@@ -66,10 +65,10 @@ typedef struct s_infos
 
 typedef struct s_philo
 {
-	int				tid;
+	int				id;
+	pid_t			pid;
 	t_infos			*infos;
 	time_t			last_meal;
-	pthread_t		thread_id;
 	struct s_philo	*next;
 }					t_philo;
 
@@ -83,7 +82,6 @@ long		safe_access(pthread_mutex_t *mutex, long *value,
 				long new, int mode);
 int			protected_lock(pthread_mutex_t *mutex1, pthread_mutex_t *mutex2,
 				int mode);
-void		join_threads(t_philo *philo, int max_id);
 void		cleanup(t_philo *philo, t_infos *infos);
 int			create_philos(t_philo *philo, t_infos *infos);
 

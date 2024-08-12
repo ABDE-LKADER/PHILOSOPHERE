@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/08 21:55:07 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/12 21:52:17 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,7 @@ static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
 		return (str_error(INIT_FAIL), ERROR);
 	if (pthread_mutex_init(&new->philo_fork, NULL))
 	{
-		if (pthread_mutex_destroy(&new->meal_lock))
-			return (str_error(DESTROY_FAIL), ERROR);
+		pthread_mutex_destroy(&new->meal_lock);
 		return (str_error(INIT_FAIL), ERROR);
 	}
 	(TRUE) && (new->tid = tid, new->infos = infos,
