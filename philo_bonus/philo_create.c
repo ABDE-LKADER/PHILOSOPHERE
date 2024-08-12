@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/08 21:55:07 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/11 18:06:30 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,8 @@
 
 void	cleanup(t_philo *philo, t_infos *infos)
 {
-	pthread_mutex_destroy(&infos->dead_lock);
-	pthread_mutex_destroy(&infos->print_lock);
 	while (philo)
 	{
-		pthread_mutex_destroy(&philo->philo_fork);
-		pthread_mutex_destroy(&philo->meal_lock);
 		if (philo->tid == infos->philo_num)
 		{
 			free(philo);
@@ -50,14 +46,6 @@ static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
 	new = malloc(sizeof(t_philo));
 	if (!new)
 		return (str_error(ALLOC_FAIL), ERROR);
-	if (pthread_mutex_init(&new->meal_lock, NULL))
-		return (str_error(INIT_FAIL), ERROR);
-	if (pthread_mutex_init(&new->philo_fork, NULL))
-	{
-		if (pthread_mutex_destroy(&new->meal_lock))
-			return (str_error(DESTROY_FAIL), ERROR);
-		return (str_error(INIT_FAIL), ERROR);
-	}
 	(TRUE) && (new->tid = tid, new->infos = infos,
 		new->next = NULL);
 	if (!*philo)
@@ -75,10 +63,7 @@ int	init_philos(t_philo **philo, t_infos *infos)
 	t_philo		*loop;
 
 	tid = 0;
-	if (pthread_mutex_init(&infos->print_lock, NULL))
-		return (str_error(INIT_FAIL), ERROR);
-	if (pthread_mutex_init(&infos->dead_lock, NULL))
-		return (str_error(INIT_FAIL), ERROR);
+	sem_open();
 	while (++tid <= infos->philo_num)
 	{
 		if (create_philo_node(philo, infos, tid) == ERROR)
@@ -103,7 +88,7 @@ int	create_philos(t_philo *philos, t_infos *infos)
 		philo->last_meal = get_time();
 		if (pthread_create(&philo->thread_id, NULL, life_cycle, philo))
 		{
-			safe_access(&infos->dead_lock, &infos->philo_dead, TRUE, WRITE);
+			// infos->philo_dead
 			return (join_threads(philos, philo->tid - 1),
 				str_error(CREATE_FAIL), ERROR);
 		}

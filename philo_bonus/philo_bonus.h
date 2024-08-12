@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   philo_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:30:51 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/08 22:15:43 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/11 19:20:50 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,6 @@ typedef struct s_infos
 	long			philo_dead;
 	long			philos_full;
 	time_t			start_time;
-	pthread_mutex_t	dead_lock;
-	pthread_mutex_t	print_lock;
 }					t_infos;
 
 typedef struct s_philo
@@ -72,8 +70,6 @@ typedef struct s_philo
 	t_infos			*infos;
 	time_t			last_meal;
 	pthread_t		thread_id;
-	pthread_mutex_t	meal_lock;
-	pthread_mutex_t	philo_fork;
 	struct s_philo	*next;
 }					t_philo;
 

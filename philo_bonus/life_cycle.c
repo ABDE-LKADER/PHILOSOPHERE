@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 21:19:32 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/08 22:14:00 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/11 19:11:53 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,7 @@ static void	sle_ep(time_t time, t_infos *infos)
 	time_t		start;
 
 	start = get_time();
-	while (get_time() - start < time && !safe_access(&infos->dead_lock,
-			&infos->philo_dead, FALSE, READ))
+	while (get_time() - start < time /* && !infos->philo_dead */)
 		usleep(100);
 }
 
@@ -32,16 +31,15 @@ time_t	get_time(void)
 
 int	life_cycle_log(t_philo *philo, char *log, int mode)
 {
-	if (protected_lock(&philo->infos->print_lock, NULL, LOCK) == ERROR)
+	if (LOCK)
 		return (ERROR);
 	if (mode == TRUE)
 		printf("%-12ld %-4d %s\n", get_time() - philo->infos->start_time,
 			philo->tid, log);
-	else if (safe_access(&philo->infos->dead_lock, &philo->infos->philo_dead,
-			FALSE, READ) == FALSE)
+	else if (philo->infos->philo_dead)
 		printf("%-12ld %-4d %s\n", get_time() - philo->infos->start_time,
 			philo->tid, log);
-	if (protected_lock(&philo->infos->print_lock, NULL, UNLOCK) == ERROR)
+	if (UNLOCK)
 		return (ERROR);
 	return (TRUE);
 }
@@ -78,8 +76,7 @@ void	*life_cycle(void *value)
 	meals = philo->infos->meals_num;
 	if (!(philo->tid % 2))
 		sle_ep(philo->infos->eat_time, philo->infos);
-	while ((meals == -1 || meals--) && !safe_access(&philo->infos->dead_lock,
-			&philo->infos->philo_dead, FALSE, READ))
+	while ((meals == -1 || meals--) && !philo->infos->philo_dead)
 	{
 		if (dine_safely(philo, philo->next) == ERROR)
 			return (NULL);
@@ -91,6 +88,5 @@ void	*life_cycle(void *value)
 		if (life_cycle_log(philo, THINK, FALSE) == ERROR)
 			return (NULL);
 	}
-	return (safe_access(&philo->infos->dead_lock,
-			&philo->infos->philos_full, FALSE, INCR), philo);
+	return (philo->infos->philos_full++, philo);
 }

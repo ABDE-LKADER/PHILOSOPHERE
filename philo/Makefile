@@ -6,7 +6,7 @@ OBJS		=	$(SRCS:.c=.o)
 HEADER		=	philo.h
 
 CC			=	cc
-FLAGS		=	-Wall -Wextra -pthread # -g -fsanitize=thread
+FLAGS		=	-Wall -Wextra -Werror -pthread
 RM			=	rm -fr
 
 GREEN		=	"\033[1;32m"
@@ -31,7 +31,7 @@ $(NAME): $(OBJS)
 	@$(CC) $(FLAGS) $^ -o $(NAME)
 
 $(OBJS): %.o: %.c $(HEADER)
-	@$(CC) $(FLAGS) -c -I . $< -o $@
+	@$(CC) $(FLAGS) -c $< -o $@
 	@printf $(GREEN)"."$(RESET)
 
 clean:
