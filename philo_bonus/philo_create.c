@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/12 21:54:11 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/16 07:38:25 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,7 @@ static int	create_philo_node(t_philo **philo, t_infos *infos, int id)
 
 int	init_philos(t_philo **philo, t_infos *infos)
 {
-	int			id;
-	t_philo		*loop;
+	int		id;
 
 	id = 0;
 	while (++id <= infos->philo_num)
@@ -56,25 +55,22 @@ int	init_philos(t_philo **philo, t_infos *infos)
 		if (create_philo_node(philo, infos, id) == ERROR)
 			return (ERROR);
 	}
-	loop = *philo;
-	while (loop && loop->next)
-		loop = loop->next;
-	if (loop)
-		loop->next = *philo;
 	return (TRUE);
 }
 
-int	create_philos(t_philo *philos, t_infos *infos)
+int	create_philos(t_philo *philo, t_infos *infos)
 {
-	t_philo		*philo;
-
-	philo = philos;
 	infos->start_time = get_time();
 	while (philo)
 	{
-		philo->last_meal = get_time();
-		if (philo->id == infos->philo_num)
-			return (TRUE);
+		philo->pid = fork();
+		if (philo->pid == ERROR)
+			return (ERROR);
+		if (philo->pid == 0)
+		{
+			life_cycle(philo, infos);
+			break ;
+		}
 		philo = philo->next;
 	}
 	return (TRUE);

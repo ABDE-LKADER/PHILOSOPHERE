@@ -6,34 +6,23 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:29:27 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/11 14:55:04 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/16 11:01:34 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	threads_manager(t_philo *philo, t_infos *infos)
-{
-	t_philo		*loop;
-	time_t		last_meal;
+bool	is_alive(t_philo *philo)
+{	
+	if (get_time() - philo->last_meal >= philo->infos->die_time)
+		return (IS_DEAD);
+	return (IS_ALIVE);
+}
 
-	loop = philo;
-	while (loop)
-	{
-		// last_meal = ;
-		if (last_meal == ERROR)
-			break ;
-		if (get_time() - last_meal >= infos->die_time)
-		{
-			// infos->philo_dead
-			life_cycle_log(loop, DIED, TRUE);
-			break ;
-		}
-		else if (infos->philos_full == infos->philo_num)
-			break ;
-		loop = loop->next;
-	}
-	join_threads(philo, infos->philo_num);
+void	child_manager(t_philo *philo)
+{
+	while (philo && waitpid(philo->pid, NULL, 0) != -1)
+		philo = philo->next;
 }
 
 int	main(int ac, char **av)
@@ -51,6 +40,6 @@ int	main(int ac, char **av)
 		return (cleanup(philo, &infos), EXIT_FAILURE);
 	if (create_philos(philo, &infos) == ERROR)
 		return (cleanup(philo, &infos), EXIT_FAILURE);
-	return (threads_manager(philo, &infos),
-		cleanup(philo, &infos), EXIT_SUCCESS);
+	return (child_manager(philo), cleanup(philo, &infos),
+		EXIT_SUCCESS);
 }
