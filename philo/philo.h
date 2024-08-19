@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:30:51 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/12 21:52:47 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 04:40:33 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@
 # define DIED "died"
 
 # define ERROR_MSG "\033[1;31mError:\033[0m <use a valid values>\n"
-# define FAILED_MSG "\033[1;31mError:\033[0m <use a valid values>\n"
 # define USAGE_MSG "\033[1;33mUsage:\033[0m <philo_num> <die_time> <eat_time> \
 <sleep_time>\n"
 
@@ -79,15 +78,13 @@ typedef struct s_philo
 time_t		get_time(void);
 void		str_error(char *s);
 void		*life_cycle(void *value);
-int			life_cycle_log(t_philo *philo, char *log, int mode);
+void		cleanup(t_philo *philo, t_infos *infos);
+void		join_threads(t_philo *philo, int max_id);
 int			parcer(int ac, char **av, t_infos *infos);
 int			init_philos(t_philo **philo, t_infos *infos);
+int			create_philos(t_philo *philo, t_infos *infos);
+void		life_cycle_log(t_philo *philo, char *log, int mode);
 long		safe_access(pthread_mutex_t *mutex, long *value,
 				long new, int mode);
-int			protected_lock(pthread_mutex_t *mutex1, pthread_mutex_t *mutex2,
-				int mode);
-void		join_threads(t_philo *philo, int max_id);
-void		cleanup(t_philo *philo, t_infos *infos);
-int			create_philos(t_philo *philo, t_infos *infos);
 
 #endif

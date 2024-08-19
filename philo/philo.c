@@ -6,44 +6,25 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:29:27 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/08 22:17:30 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 05:08:02 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	protected_lock(pthread_mutex_t *m_1, pthread_mutex_t *m_2, int mode)
-{
-	if (mode == LOCK)
-	{
-		if (pthread_mutex_lock(m_1))
-			return (str_error(LOCK_FAIL), ERROR);
-	}
-	else if (mode == UNLOCK)
-	{
-		if (m_1 && pthread_mutex_unlock(m_1))
-			return (str_error(UNLOCK_FAIL), ERROR);
-		if (m_2 && pthread_mutex_unlock(m_2))
-			return (str_error(UNLOCK_FAIL), ERROR);
-	}
-	return (TRUE);
-}
 
 long	safe_access(pthread_mutex_t *mutex, long *value, long new, int mode)
 {
 	long		fetch;
 
 	fetch = 0;
-	if (pthread_mutex_lock(mutex))
-		return (str_error(LOCK_FAIL), ERROR);
+	pthread_mutex_lock(mutex);
 	if (mode == READ)
 		fetch = *value;
 	else if (mode == WRITE)
 		*value = new;
 	else if (mode == INCR)
 		(*value)++;
-	if (pthread_mutex_unlock(mutex))
-		return (str_error(UNLOCK_FAIL), ERROR);
+	pthread_mutex_unlock(mutex);
 	return (fetch);
 }
 

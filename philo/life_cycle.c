@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 21:19:32 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/16 07:32:50 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 07:18:43 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,13 @@ time_t	get_time(void)
 		(time.tv_sec * 1000) + (time.tv_usec / 1000));
 }
 
-int	life_cycle_log(t_philo *philo, char *log, int mode)
+void	life_cycle_log(t_philo *philo, char *log, int mode)
 {
 	t_infos		*infos;
 	time_t		time_stamp;
 
 	infos = philo->infos;
-	if (protected_lock(&infos->print_lock, NULL, LOCK) == ERROR)
-		return (ERROR);
+	pthread_mutex_lock(&infos->print_lock);
 	if (mode == TRUE)
 	{
 		time_stamp = get_time() - infos->start_time;
@@ -48,32 +47,22 @@ int	life_cycle_log(t_philo *philo, char *log, int mode)
 		time_stamp = get_time() - infos->start_time;
 		printf("%-12ld %-4d %s\n", time_stamp, philo->tid, log);
 	}
-	if (protected_lock(&infos->print_lock, NULL, UNLOCK) == ERROR)
-		return (ERROR);
-	return (TRUE);
+	pthread_mutex_unlock(&infos->print_lock);
 }
 
-int	dine_safely(t_philo *philo, t_philo *next)
+void	dine_safely(t_philo *philo, t_philo *next)
 {
-	if (protected_lock(&philo->philo_fork, NULL, LOCK) == ERROR)
-		return (ERROR);
-	if (life_cycle_log(philo, FORK, FALSE) == ERROR)
-		return (protected_lock(&philo->philo_fork, NULL, UNLOCK), ERROR);
-	if (philo->tid == next->tid || protected_lock(&next->philo_fork,
-			NULL, LOCK) == ERROR)
-		return (protected_lock(&philo->philo_fork, NULL, UNLOCK), ERROR);
-	if (life_cycle_log(philo, FORK, FALSE) == ERROR
-		|| life_cycle_log(philo, EAT, FALSE) == ERROR)
-		return (protected_lock(&philo->philo_fork, &next->philo_fork,
-				UNLOCK), ERROR);
-	if (safe_access(&philo->meal_lock, &philo->last_meal,
-			get_time(), WRITE) == ERROR)
-		return (protected_lock(&philo->philo_fork, &next->philo_fork,
-				UNLOCK), ERROR);
+	pthread_mutex_lock(&philo->philo_fork);
+	life_cycle_log(philo, FORK, FALSE);
+	if (philo->tid == next->tid)
+		return ((void)pthread_mutex_unlock(&philo->philo_fork));
+	pthread_mutex_lock(&next->philo_fork);
+	life_cycle_log(philo, FORK, FALSE);
+	life_cycle_log(philo, EAT, FALSE);
+	safe_access(&philo->meal_lock, &philo->last_meal, get_time(), WRITE);
 	sle_ep(philo->infos->eat_time, philo->infos);
-	if (protected_lock(&philo->philo_fork, &next->philo_fork, UNLOCK) == ERROR)
-		return (ERROR);
-	return (TRUE);
+	pthread_mutex_unlock(&philo->philo_fork);
+	pthread_mutex_unlock(&next->philo_fork);
 }
 
 void	*life_cycle(void *value)
@@ -88,15 +77,14 @@ void	*life_cycle(void *value)
 	while ((meals == -1 || meals--) && !safe_access(&philo->infos->dead_lock,
 			&philo->infos->philo_dead, FALSE, READ))
 	{
-		if (dine_safely(philo, philo->next) == ERROR)
+		dine_safely(philo, philo->next);
+		if (philo->tid == philo->next->tid)
 			return (NULL);
 		if (meals == FALSE)
 			break ;
-		if (life_cycle_log(philo, SLEEP, FALSE) == ERROR)
-			return (NULL);
+		life_cycle_log(philo, SLEEP, FALSE);
 		sle_ep(philo->infos->sleep_time, philo->infos);
-		if (life_cycle_log(philo, THINK, FALSE) == ERROR)
-			return (NULL);
+		life_cycle_log(philo, THINK, FALSE);
 	}
 	return (safe_access(&philo->infos->dead_lock,
 			&philo->infos->philos_full, FALSE, INCR), philo);

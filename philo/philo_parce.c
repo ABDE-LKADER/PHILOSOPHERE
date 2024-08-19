@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 13:10:42 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/10 20:36:11 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 04:01:19 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void	str_error(char *s)
 		return ;
 	while (*s)
 		write(2, s++, 1);
+	write(2, "\n", 1);
 }
 
 static int	ato_num(char *str)

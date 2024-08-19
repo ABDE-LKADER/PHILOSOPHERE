@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/12 21:52:17 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 04:45:42 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,7 @@ void	join_threads(t_philo *philo, int max_id)
 {
 	while (philo)
 	{
-		if (pthread_join(philo->thread_id, NULL))
-			str_error(JOIN_FAIL);
+		pthread_join(philo->thread_id, NULL);
 		if (philo->tid == max_id)
 			break ;
 		philo = philo->next;
