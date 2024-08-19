@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 13:10:42 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/19 01:59:27 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 19:27:27 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static int	ato_num(char *str)
 {
 	time_t		num;
 
-	num = FALSE;
+	num = 0;
 	(*str == '+') && (str++);
 	while (*str && (*str >= 48 && *str <= 57))
 	{

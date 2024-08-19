@@ -1,6 +1,6 @@
 NAME		=	philo
 
-SRCS		=	philo.c philo_parce.c philo_create.c life_cycle.c
+SRCS		=	philo.c philo_parce.c philo_create.c life_cycle.c philo_tools.c
 
 OBJS		=	$(SRCS:.c=.o)
 HEADER		=	philo.h

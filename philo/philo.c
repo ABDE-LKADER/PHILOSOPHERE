@@ -6,45 +6,26 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:29:27 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/19 05:08:02 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 19:10:20 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long	safe_access(pthread_mutex_t *mutex, long *value, long new, int mode)
-{
-	long		fetch;
-
-	fetch = 0;
-	pthread_mutex_lock(mutex);
-	if (mode == READ)
-		fetch = *value;
-	else if (mode == WRITE)
-		*value = new;
-	else if (mode == INCR)
-		(*value)++;
-	pthread_mutex_unlock(mutex);
-	return (fetch);
-}
-
-void	threads_manager(t_philo *philo, t_infos *infos)
+static void	threads_manager(t_philo *philo, t_infos *infos)
 {
 	t_philo		*loop;
 	time_t		last_meal;
 
 	loop = philo;
-	while (loop)
+	while (loop && infos->meals_num != 0)
 	{
 		last_meal = safe_access(&loop->meal_lock, &loop->last_meal,
 				FALSE, READ);
-		if (last_meal == ERROR)
-			break ;
 		if (get_time() - last_meal >= infos->die_time)
 		{
-			if (!safe_access(&infos->dead_lock, &infos->philo_dead,
-					TRUE, WRITE))
-				life_cycle_log(loop, DIED, TRUE);
+			safe_access(&infos->dead_lock, &infos->philo_dead, TRUE, WRITE);
+			life_cycle_log(loop, DIED, TRUE);
 			break ;
 		}
 		else if (safe_access(&infos->dead_lock, &infos->philos_full,
@@ -52,7 +33,7 @@ void	threads_manager(t_philo *philo, t_infos *infos)
 			break ;
 		loop = loop->next;
 	}
-	join_threads(philo, infos->philo_num);
+	cleanup(philo, infos);
 }
 
 int	main(int ac, char **av)
@@ -70,6 +51,5 @@ int	main(int ac, char **av)
 		return (cleanup(philo, &infos), EXIT_FAILURE);
 	if (create_philos(philo, &infos) == ERROR)
 		return (cleanup(philo, &infos), EXIT_FAILURE);
-	return (threads_manager(philo, &infos),
-		cleanup(philo, &infos), EXIT_SUCCESS);
+	return (threads_manager(philo, &infos), EXIT_SUCCESS);
 }

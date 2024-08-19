@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 21:19:32 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/19 03:50:57 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 21:47:13 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,10 @@ static void dine_safely(t_philo *philo, t_infos *infos)
 	sem_wait(infos->philo_forks);
 	life_cycle_log(philo, FORK);
 	if (infos->philo_num == 1)
+	{
 		sle_ep(infos->die_time);
+		return ;
+	}
 	sem_wait(infos->philo_forks);
 	life_cycle_log(philo, FORK);
 	life_cycle_log(philo, EAT);

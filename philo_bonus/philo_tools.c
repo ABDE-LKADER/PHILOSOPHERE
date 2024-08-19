@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 00:47:56 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/19 03:46:34 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 21:46:42 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ void	cleanup(t_philo *philo, t_infos *infos)
 	sem_close(infos->sem_log);
 	sem_close(infos->sem_dead);
 	sem_close(infos->philo_forks);
+	pthread_join(infos->kill, NULL);
 	while (philo)
 	{
 		sem_close(philo->sem_mute);

@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:29:27 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/19 03:42:27 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 21:44:51 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,5 @@ int	main(int ac, char **av)
 		return (cleanup(philo, &infos), EXIT_FAILURE);
 	if (pthread_create(&infos.kill, NULL, kill_childs, philo))
 		return (error_cleaner(philo, CREATE_FAIL), EXIT_FAILURE);
-	pthread_detach(infos.kill);
 	return (cleanup(philo, &infos), EXIT_SUCCESS);
 }

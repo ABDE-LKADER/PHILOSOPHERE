@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:30:51 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/19 04:40:33 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 19:13:01 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,13 @@
 # define THINK "is thinking"
 # define DIED "died"
 
-# define ERROR_MSG "\033[1;31mError:\033[0m <use a valid values>\n"
+# define ERROR_MSG "\033[1;31mError:\033[0m <use a valid values>"
 # define USAGE_MSG "\033[1;33mUsage:\033[0m <philo_num> <die_time> <eat_time> \
-<sleep_time>\n"
+<sleep_time>"
 
-# define JOIN_FAIL "\033[1;31mError:\033[0m <failed to join the thread>\n"
-# define INIT_FAIL "\033[1;31mError:\033[0m <failed to initialize the mutex>\n"
-# define LOCK_FAIL "\033[1;31mError:\033[0m <failed to lock the mutex>\n"
-# define UNLOCK_FAIL "\033[1;31mError:\033[0m <failed to lock the mutex>\n"
-# define CREATE_FAIL "\033[1;31mError:\033[0m <failed to create a new thread>\n"
-# define ALLOC_FAIL "\033[1;31mError:\033[0m <failed to allocate memory>\n"
+# define INIT_FAIL "\033[1;31mError:\033[0m <failed to initialize the mutex>"
+# define CREATE_FAIL "\033[1;31mError:\033[0m <failed to create a new thread>"
+# define ALLOC_FAIL "\033[1;31mError:\033[0m <failed to allocate memory>"
 
 typedef struct s_infos
 {
@@ -79,9 +76,9 @@ time_t		get_time(void);
 void		str_error(char *s);
 void		*life_cycle(void *value);
 void		cleanup(t_philo *philo, t_infos *infos);
-void		join_threads(t_philo *philo, int max_id);
 int			parcer(int ac, char **av, t_infos *infos);
 int			init_philos(t_philo **philo, t_infos *infos);
+void		join_threads(t_philo *philo, t_infos *infos);
 int			create_philos(t_philo *philo, t_infos *infos);
 void		life_cycle_log(t_philo *philo, char *log, int mode);
 long		safe_access(pthread_mutex_t *mutex, long *value,

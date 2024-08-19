@@ -6,40 +6,11 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/19 04:45:42 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 20:17:25 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo.h>
-
-void	cleanup(t_philo *philo, t_infos *infos)
-{
-	pthread_mutex_destroy(&infos->dead_lock);
-	pthread_mutex_destroy(&infos->print_lock);
-	while (philo)
-	{
-		pthread_mutex_destroy(&philo->philo_fork);
-		pthread_mutex_destroy(&philo->meal_lock);
-		if (philo->tid == infos->philo_num)
-		{
-			free(philo);
-			break ;
-		}
-		free(philo);
-		philo = philo->next;
-	}
-}
-
-void	join_threads(t_philo *philo, int max_id)
-{
-	while (philo)
-	{
-		pthread_join(philo->thread_id, NULL);
-		if (philo->tid == max_id)
-			break ;
-		philo = philo->next;
-	}
-}
 
 static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
 {
@@ -49,13 +20,6 @@ static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
 	new = malloc(sizeof(t_philo));
 	if (!new)
 		return (str_error(ALLOC_FAIL), ERROR);
-	if (pthread_mutex_init(&new->meal_lock, NULL))
-		return (str_error(INIT_FAIL), ERROR);
-	if (pthread_mutex_init(&new->philo_fork, NULL))
-	{
-		pthread_mutex_destroy(&new->meal_lock);
-		return (str_error(INIT_FAIL), ERROR);
-	}
 	(TRUE) && (new->tid = tid, new->infos = infos,
 		new->next = NULL);
 	if (!*philo)
@@ -64,6 +28,13 @@ static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
 	while (last->next)
 		last = last->next;
 	last->next = new;
+	if (pthread_mutex_init(&new->meal_lock, NULL))
+		return (str_error(INIT_FAIL), ERROR);
+	if (pthread_mutex_init(&new->philo_fork, NULL))
+	{
+		pthread_mutex_destroy(&new->meal_lock);
+		return (str_error(INIT_FAIL), ERROR);
+	}
 	return (TRUE);
 }
 
@@ -85,8 +56,7 @@ int	init_philos(t_philo **philo, t_infos *infos)
 	loop = *philo;
 	while (loop && loop->next)
 		loop = loop->next;
-	if (loop)
-		loop->next = *philo;
+	(loop) && (loop->next = *philo);
 	return (TRUE);
 }
 
@@ -102,8 +72,7 @@ int	create_philos(t_philo *philos, t_infos *infos)
 		if (pthread_create(&philo->thread_id, NULL, life_cycle, philo))
 		{
 			safe_access(&infos->dead_lock, &infos->philo_dead, TRUE, WRITE);
-			return (join_threads(philos, philo->tid - 1),
-				str_error(CREATE_FAIL), ERROR);
+			return (usleep(100), str_error(CREATE_FAIL), ERROR);
 		}
 		if (philo->tid == infos->philo_num)
 			return (TRUE);
