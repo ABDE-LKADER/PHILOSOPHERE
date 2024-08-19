@@ -6,23 +6,31 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:29:27 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/16 11:01:34 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 03:42:27 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
 bool	is_alive(t_philo *philo)
-{	
+{
 	if (get_time() - philo->last_meal >= philo->infos->die_time)
 		return (IS_DEAD);
 	return (IS_ALIVE);
 }
 
-void	child_manager(t_philo *philo)
+static void	*kill_childs(void *value)
 {
-	while (philo && waitpid(philo->pid, NULL, 0) != -1)
+	t_philo		*philo;
+
+	philo = value;
+	sem_wait(philo->infos->sem_dead);
+	while (philo)
+	{
+		kill(philo->pid, SIGKILL);
 		philo = philo->next;
+	}
+	return (NULL);
 }
 
 int	main(int ac, char **av)
@@ -40,6 +48,8 @@ int	main(int ac, char **av)
 		return (cleanup(philo, &infos), EXIT_FAILURE);
 	if (create_philos(philo, &infos) == ERROR)
 		return (cleanup(philo, &infos), EXIT_FAILURE);
-	return (child_manager(philo), cleanup(philo, &infos),
-		EXIT_SUCCESS);
+	if (pthread_create(&infos.kill, NULL, kill_childs, philo))
+		return (error_cleaner(philo, CREATE_FAIL), EXIT_FAILURE);
+	pthread_detach(infos.kill);
+	return (cleanup(philo, &infos), EXIT_SUCCESS);
 }

@@ -6,77 +6,87 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 21:19:32 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/16 11:30:14 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 03:50:57 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo_bonus.h>
 
-static bool	sle_ep(time_t time, t_philo *philo)
+static void life_cycle_log(t_philo *philo, char *log)
 {
-	time_t		start;
+	time_t time_stamp;
 
-	start = get_time();
-	while (get_time() - start < time)
-	{
-		if (is_alive(philo) == IS_DEAD)
-			return (IS_DEAD);
-		usleep(100);
-	}
-	return (IS_ALIVE);
-}
-
-time_t	get_time(void)
-{
-	struct timeval	time;
-
-	return (gettimeofday(&time, NULL),
-		(time.tv_sec * 1000) + (time.tv_usec / 1000));
-}
-
-void	life_cycle_log(t_philo *philo, char *log)
-{
-	time_t	time_stamp;
-
+	sem_wait(philo->infos->sem_log);
 	time_stamp = get_time() - philo->infos->start_time;
 	printf("%-12ld %-4d %s\n", time_stamp, philo->id, log);
+	sem_post(philo->infos->sem_log);
 }
 
-bool	dine_safely(t_philo *philo)
+static void urgent_death_detect(t_philo *philo, t_infos *infos)
 {
+	time_t time_stamp;
+
+	sem_wait(infos->sem_log);
+	time_stamp = get_time() - philo->infos->start_time;
+	printf("%-12ld %-4d %s\n", time_stamp, philo->id, DIED);
+	sem_post(infos->sem_dead);
+	exit(EXIT_SUCCESS);
+}
+
+static void *is_dead(void *value)
+{
+	t_philo *philo;
+
+	philo = value;
+	while (true)
+	{
+		sem_wait(philo->sem_mute);
+		if (is_alive(philo) == IS_DEAD)
+			urgent_death_detect(philo, philo->infos);
+		sem_post(philo->sem_mute);
+	}
+	return (NULL);
+}
+
+static void dine_safely(t_philo *philo, t_infos *infos)
+{
+	sem_wait(infos->philo_forks);
 	life_cycle_log(philo, FORK);
+	if (infos->philo_num == 1)
+		sle_ep(infos->die_time);
+	sem_wait(infos->philo_forks);
 	life_cycle_log(philo, FORK);
 	life_cycle_log(philo, EAT);
+	sem_wait(philo->sem_mute);
 	philo->last_meal = get_time();
-	if (sle_ep(philo->infos->eat_time, philo) == IS_DEAD)
-		return (IS_DEAD);
-	return (TRUE);
+	sem_post(philo->sem_mute);
+	sle_ep(infos->eat_time);
+	sem_post(infos->philo_forks);
+	sem_post(infos->philo_forks);
 }
 
-void	life_cycle(t_philo *philo, t_infos *infos)
+void life_cycle(t_philo *philo, t_infos *infos)
 {
-	int		meals;
+	pthread_t 	tid;
+	char		*name;
 
-	sem_unlink("forks");
-	infos->all_forks = sem_open("forks", O_CREAT, infos->philo_num);
-	if (infos->all_forks == SEM_FAILED)
+	name = num_toa(philo->id);
+	if (name == NULL)
+		sem_post(infos->sem_dead);
+	philo->last_meal = get_time();
+	philo->sem_mute = create_sem(name, 1, TRUE);
+	if (philo->sem_mute == SEM_FAILED)
+		return;
+	if (pthread_create(&tid, NULL, is_dead, philo))
+		return ((void)sem_post(infos->sem_dead));
+	pthread_detach(tid);
+	while (infos->meals_num == -1 || infos->meals_num--)
 	{
-		str_error("SEMAPHORE OPEN ERROR");
-		return ;
-	}
-	meals = infos->meals_num;
-	if (!(philo->id % 2))
-		sle_ep(philo->infos->eat_time, philo);
-	while (meals == -1 || meals--)
-	{
-		if (dine_safely(philo) == IS_DEAD || meals == 0)
-		{
-			if (meals != FALSE)
-				life_cycle_log(philo, DIED);
-			break ;
-		}
+		dine_safely(philo, infos);
+		if (infos->meals_num == 0)
+			exit(EXIT_SUCCESS);
 		life_cycle_log(philo, SLEEP);
-		if (sle_ep(philo->infos->sleep_time, philo) == IS_ALIVE)
-			life_cycle_log(philo, THINK);
+		sle_ep(philo->infos->sleep_time);
+		life_cycle_log(philo, THINK);
 	}
 }

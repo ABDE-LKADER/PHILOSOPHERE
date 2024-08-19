@@ -6,24 +6,28 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/16 07:38:25 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 03:47:02 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo_bonus.h>
 
-void	cleanup(t_philo *philo, t_infos *infos)
+sem_t	*create_sem(char *name, int num, bool mode)
 {
-	while (philo)
+	sem_t	*sem;
+
+	sem_unlink(name);
+	sem = sem_open(name, O_CREAT, S_IRUSR | S_IWUSR, num);
+	if (sem == SEM_FAILED)
 	{
-		if (philo->id == infos->philo_num)
-		{
-			free(philo);
-			break ;
-		}
-		free(philo);
-		philo = philo->next;
+		if (mode == TRUE)
+			free(name);
+		return (str_error(SEM_OPEN), SEM_FAILED);
 	}
+	sem_unlink(name);
+	if (mode == TRUE)
+		free(name);
+	return (sem);
 }
 
 static int	create_philo_node(t_philo **philo, t_infos *infos, int id)
@@ -50,6 +54,15 @@ int	init_philos(t_philo **philo, t_infos *infos)
 	int		id;
 
 	id = 0;
+	infos->sem_log = create_sem("log", 1, FALSE);
+	if (infos->sem_log == SEM_FAILED)
+		return (ERROR);
+	infos->sem_dead = create_sem("die", 0, FALSE);
+	if (infos->sem_dead == SEM_FAILED)
+		return (ERROR);
+	infos->philo_forks = create_sem("forks", infos->philo_num, FALSE);
+	if (infos->philo_forks == SEM_FAILED)
+		return (ERROR);
 	while (++id <= infos->philo_num)
 	{
 		if (create_philo_node(philo, infos, id) == ERROR)

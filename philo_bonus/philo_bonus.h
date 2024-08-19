@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:30:51 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/16 11:30:10 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/19 02:24:56 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,27 +45,25 @@
 # define DIED "died"
 
 # define ERROR_MSG "\033[1;31mError:\033[0m <use a valid values>"
-# define FAILED_MSG "\033[1;31mError:\033[0m <use a valid values>"
 # define USAGE_MSG "\033[1;33mUsage:\033[0m <philo_num> <die_time> <eat_time> \
 <sleep_time>"
 
-# define JOIN_FAIL "\033[1;31mError:\033[0m <failed to join the thread>"
-# define INIT_FAIL "\033[1;31mError:\033[0m <failed to initialize the mutex>"
-# define LOCK_FAIL "\033[1;31mError:\033[0m <failed to lock the mutex>"
-# define UNLOCK_FAIL "\033[1;31mError:\033[0m <failed to lock the mutex>"
+# define SEM_OPEN "\033[1;31mError:\033[0m <failed to open the semaphore>"
 # define CREATE_FAIL "\033[1;31mError:\033[0m <failed to create a new thread>"
+# define DETACH_FAIL "\033[1;31mError:\033[0m <failed to detach the thread>"
 # define ALLOC_FAIL "\033[1;31mError:\033[0m <failed to allocate memory>"
 
 typedef struct s_infos
 {
+	pthread_t		kill;
+	sem_t			*sem_log;
+	sem_t			*sem_dead;
+	sem_t			*philo_forks;
 	int				philo_num;
 	int				meals_num;
 	int				eat_time;
 	int				die_time;
 	int				sleep_time;
-	long			philo_dead;
-	long			philos_full;
-	sem_t			all_forks;
 	time_t			start_time;
 }					t_infos;
 
@@ -74,18 +72,22 @@ typedef struct s_philo
 	int				id;
 	pid_t			pid;
 	t_infos			*infos;
+	sem_t			*sem_mute;
 	time_t			last_meal;
 	struct s_philo	*next;
 }					t_philo;
 
 time_t		get_time(void);
+char		*num_toa(int n);
 void		str_error(char *s);
+void 		sle_ep(time_t time);
 bool		is_alive(t_philo *philo);
-void		life_cycle_log(t_philo *philo, char *log);
+void		cleanup(t_philo *philo, t_infos *infos);
+void		error_cleaner(t_philo *philo, char *msg);
 int			parcer(int ac, char **av, t_infos *infos);
 void		life_cycle(t_philo *philo, t_infos *infos);
+sem_t		*create_sem(char *name, int num, bool mode);
 int			init_philos(t_philo **philo, t_infos *infos);
-void		cleanup(t_philo *philo, t_infos *infos);
 int			create_philos(t_philo *philo, t_infos *infos);
 
 #endif
