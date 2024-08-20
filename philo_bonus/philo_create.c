@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/20 09:53:23 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/20 12:40:42 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ int	init_philos(t_philo **philo, t_infos *infos)
 	int		id;
 
 	id = 0;
+	if (infos->philo_num == 0 || infos->meals_num == 0)
+		exit (EXIT_SUCCESS);
 	infos->sem_log = create_sem("log", 1, FALSE);
 	if (infos->sem_log == SEM_FAILED)
 		return (ERROR);

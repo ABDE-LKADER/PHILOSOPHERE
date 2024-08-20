@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 00:47:56 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/20 09:46:52 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/20 12:42:39 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,12 +53,13 @@ void	error_cleaner(t_philo *philo, char *msg)
 	sem_wait(infos->sem_log);
 	while (philo)
 	{
-		kill (philo->pid, SIGKILL);
+		if (philo->pid > 0)
+			kill (philo->pid, SIGKILL);
 		philo = philo->next;
 	}
 	str_error(msg);
 	sem_post(infos->sem_log);
-	cleanup(philo, infos);
+	cleanup(head, infos);
 }
 
 void	cleanup(t_philo *philo, t_infos *infos)

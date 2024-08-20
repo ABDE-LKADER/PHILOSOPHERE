@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:29:27 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/20 09:53:14 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/20 12:42:40 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ static void	kill_childs(t_philo *philo, t_infos *infos)
 	sem_wait(infos->sem_dead);
 	while (philo)
 	{
-		kill(philo->pid, SIGKILL);
+		if (philo->pid > 0)
+			kill(philo->pid, SIGKILL);
 		philo = philo->next;
 	}
 	pthread_join(infos->kill, NULL);
@@ -59,7 +60,7 @@ int	main(int ac, char **av)
 	if (init_philos(&philo, &infos) == ERROR)
 		return (cleanup(philo, &infos), EXIT_FAILURE);
 	if (create_philos(philo, &infos) == ERROR)
-		return (cleanup(philo, &infos), EXIT_FAILURE);
+		return (error_cleaner(philo, FORK_FAIL), EXIT_FAILURE);
 	if (pthread_create(&infos.kill, NULL, meals_childs, &infos))
 		return (error_cleaner(philo, CREATE_FAIL), EXIT_FAILURE);
 	return (kill_childs(philo, &infos), EXIT_SUCCESS);

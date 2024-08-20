@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/19 20:17:25 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/20 11:43:19 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,13 @@ static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
 	new = malloc(sizeof(t_philo));
 	if (!new)
 		return (str_error(ALLOC_FAIL), ERROR);
+	if (pthread_mutex_init(&new->meal_lock, NULL))
+		return (free(new), str_error(INIT_FAIL), ERROR);
+	if (pthread_mutex_init(&new->philo_fork, NULL))
+	{
+		pthread_mutex_destroy(&new->meal_lock);
+		return (free(new), str_error(INIT_FAIL), ERROR);
+	}
 	(TRUE) && (new->tid = tid, new->infos = infos,
 		new->next = NULL);
 	if (!*philo)
@@ -28,13 +35,6 @@ static int	create_philo_node(t_philo **philo, t_infos *infos, int tid)
 	while (last->next)
 		last = last->next;
 	last->next = new;
-	if (pthread_mutex_init(&new->meal_lock, NULL))
-		return (str_error(INIT_FAIL), ERROR);
-	if (pthread_mutex_init(&new->philo_fork, NULL))
-	{
-		pthread_mutex_destroy(&new->meal_lock);
-		return (str_error(INIT_FAIL), ERROR);
-	}
 	return (TRUE);
 }
 

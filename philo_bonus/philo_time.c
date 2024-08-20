@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 00:55:46 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/19 00:57:21 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/20 12:46:15 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ time_t	get_time(void)
 		(time.tv_sec * 1000) + (time.tv_usec / 1000));
 }
 
-void sle_ep(time_t time)
+void	sle_ep(time_t time)
 {
-	time_t start;
+	time_t	start;
 
 	start = get_time();
 	while (get_time() - start < time)

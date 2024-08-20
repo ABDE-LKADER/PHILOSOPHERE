@@ -6,12 +6,12 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:30:51 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/19 21:16:49 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/20 12:46:47 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-# define PHILO_H
+#ifndef PHILO_BONUS_H
+# define PHILO_BONUS_H
 
 # include <fcntl.h>
 # include <stdio.h>
@@ -29,13 +29,6 @@
 # define FALSE 0
 # define ERROR -1
 
-# define READ 0
-# define WRITE 1
-# define INCR 2
-
-# define LOCK 0
-# define UNLOCK 1
-
 # define IS_DEAD 0
 # define IS_ALIVE 1
 
@@ -51,7 +44,7 @@
 
 # define SEM_OPEN "\033[1;31mError:\033[0m <failed to open the semaphore>"
 # define CREATE_FAIL "\033[1;31mError:\033[0m <failed to create a new thread>"
-# define DETACH_FAIL "\033[1;31mError:\033[0m <failed to detach the thread>"
+# define FORK_FAIL "\033[1;31mError:\033[0m <failed to create a new process>"
 # define ALLOC_FAIL "\033[1;31mError:\033[0m <failed to allocate memory>"
 
 typedef struct s_infos
@@ -81,7 +74,7 @@ typedef struct s_philo
 time_t		get_time(void);
 char		*num_toa(int n);
 void		str_error(char *s);
-void 		sle_ep(time_t time);
+void		sle_ep(time_t time);
 bool		is_alive(t_philo *philo);
 void		cleanup(t_philo *philo, t_infos *infos);
 void		error_cleaner(t_philo *philo, char *msg);
