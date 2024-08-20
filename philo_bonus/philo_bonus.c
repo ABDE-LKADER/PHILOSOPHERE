@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 13:29:27 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/19 21:44:51 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/20 09:53:14 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ static void	*meals_childs(void *value)
 	while (waitpid(-1, NULL, 0) != -1)
 		;
 	sem_post(infos->sem_dead);
+	return (NULL);
 }
 
 static void	kill_childs(t_philo *philo, t_infos *infos)
