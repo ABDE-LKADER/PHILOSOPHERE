@@ -6,7 +6,7 @@
 /*   By: abadouab <abadouab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 09:31:38 by abadouab          #+#    #+#             */
-/*   Updated: 2024/08/20 18:43:37 by abadouab         ###   ########.fr       */
+/*   Updated: 2024/08/20 21:07:31 by abadouab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ sem_t	*create_sem(char *name, int num, bool mode)
 	sem_t	*sem;
 
 	sem_unlink(name);
-	sem = sem_open(name, O_CREAT, S_IRWXU, num);
+	sem = sem_open(name, O_CREAT, S_IRWXU | S_IRWXG | S_IRWXO, num);
 	if (sem == SEM_FAILED)
 	{
 		if (mode == TRUE)
