@@ -83,6 +83,8 @@ void life_cycle(t_philo *philo, t_infos *infos)
 	if (pthread_create(&tid, NULL, is_dead, philo))
 		return ((void)sem_post(infos->sem_dead));
 	pthread_detach(tid);
+	if ((philo->id % 2) == 0)
+		sle_ep(infos->eat_time);
 	while (infos->meals_num == -1 || infos->meals_num--)
 	{
 		dine_safely(philo, infos);

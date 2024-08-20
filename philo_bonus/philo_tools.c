@@ -63,17 +63,18 @@ void	error_cleaner(t_philo *philo, char *msg)
 
 void	cleanup(t_philo *philo, t_infos *infos)
 {
+	t_philo		*save;
+
 	while (waitpid(-1, NULL, 0) != -1)
 		;
-	sem_post(infos->sem_dead);
 	sem_close(infos->sem_log);
 	sem_close(infos->sem_dead);
 	sem_close(infos->philo_forks);
-	pthread_join(infos->kill, NULL);
 	while (philo)
 	{
+		save = philo->next;
 		sem_close(philo->sem_mute);
 		free(philo);
-		philo = philo->next;
+		philo = save;
 	}
 }

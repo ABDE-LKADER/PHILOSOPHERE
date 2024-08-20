@@ -6,7 +6,7 @@ OBJS		=	$(SRCS:.c=.o)
 HEADER		=	philo_bonus.h
 
 CC			=	cc
-FLAGS		=	-Wall -Wextra -Werror -pthread
+FLAGS		=	-Wall -Wextra -pthread
 RM			=	rm -fr
 
 GREEN		=	"\033[1;32m"

@@ -54,6 +54,8 @@ int	init_philos(t_philo **philo, t_infos *infos)
 	int		id;
 
 	id = 0;
+	if (infos->philo_num == 0 || infos->meals_num == 0)
+		exit (EXIT_SUCCESS);
 	infos->sem_log = create_sem("log", 1, FALSE);
 	if (infos->sem_log == SEM_FAILED)
 		return (ERROR);

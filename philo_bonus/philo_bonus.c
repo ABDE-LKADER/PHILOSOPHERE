@@ -19,18 +19,29 @@ bool	is_alive(t_philo *philo)
 	return (IS_ALIVE);
 }
 
-static void	*kill_childs(void *value)
+static void	*meals_childs(void *value)
 {
-	t_philo		*philo;
+	t_infos		*infos;
 
-	philo = value;
-	sem_wait(philo->infos->sem_dead);
+	infos = value;
+	while (waitpid(-1, NULL, 0) != -1)
+		;
+	sem_post(infos->sem_dead);
+}
+
+static void	kill_childs(t_philo *philo, t_infos *infos)
+{
+	t_philo		*head;
+
+	head = philo;
+	sem_wait(infos->sem_dead);
 	while (philo)
 	{
 		kill(philo->pid, SIGKILL);
 		philo = philo->next;
 	}
-	return (NULL);
+	pthread_join(infos->kill, NULL);
+	cleanup(head, infos);
 }
 
 int	main(int ac, char **av)
@@ -48,7 +59,7 @@ int	main(int ac, char **av)
 		return (cleanup(philo, &infos), EXIT_FAILURE);
 	if (create_philos(philo, &infos) == ERROR)
 		return (cleanup(philo, &infos), EXIT_FAILURE);
-	if (pthread_create(&infos.kill, NULL, kill_childs, philo))
+	if (pthread_create(&infos.kill, NULL, meals_childs, &infos))
 		return (error_cleaner(philo, CREATE_FAIL), EXIT_FAILURE);
-	return (cleanup(philo, &infos), EXIT_SUCCESS);
+	return (kill_childs(philo, &infos), EXIT_SUCCESS);
 }
